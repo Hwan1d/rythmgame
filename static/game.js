@@ -102,7 +102,14 @@ function startStage(stageId) {
   document.getElementById("hudSongTitle").textContent = song.title;
   document.getElementById("hudBpmTag").textContent = `${song.bpm} BPM`;
 
-  state.chart = window.rhythmAudio.startSong(stageId);
+  let pyChart = null;
+  if (window.pyRhythm && typeof window.pyRhythm.getChartJson === "function") {
+    try {
+      pyChart = JSON.parse(window.pyRhythm.getChartJson(stageId));
+    } catch (_) {}
+  }
+
+  state.chart = window.rhythmAudio.startSong(stageId, pyChart);
   updateHud();
 }
 
@@ -168,8 +175,14 @@ function handlePressDown(inputType = "tap") {
 
   // 2. 일반 / 엇박(offbeat) / 리듬닥터 7박(heartbeat) / 액센트(accent) 단타 판정
   targetNote.judged = true;
-  const wrongButton = targetNote.type === "accent" && inputType !== "accent";
 
+  if (window.pyRhythm && typeof window.pyRhythm.evaluateHit === "function") {
+    const res = JSON.parse(window.pyRhythm.evaluateHit(minDiff, targetNote.type, inputType));
+    applyPythonResult(res, targetNote);
+    return;
+  }
+
+  const wrongButton = targetNote.type === "accent" && inputType !== "accent";
   if (minDiff <= 0.17 && !wrongButton) {
     registerJudgment("BOP!", targetNote, "#ffd166");
   } else if (minDiff <= 0.32) {
@@ -193,6 +206,12 @@ function handleReleaseUp() {
   const beat = window.rhythmAudio.getCurrentBeat();
   const releaseDiff = Math.abs(note.endBeat - beat);
 
+  if (window.pyRhythm && typeof window.pyRhythm.evaluateRelease === "function") {
+    const res = JSON.parse(window.pyRhythm.evaluateRelease(releaseDiff));
+    applyPythonResult(res, note);
+    return;
+  }
+
   if (releaseDiff <= 0.26) {
     note.holdCompleted = true;
     registerJudgment("RELEASE BOP!", note, "#06d6a0");
@@ -201,6 +220,48 @@ function handleReleaseUp() {
   } else {
     registerJudgment("MISS", note, "#ff5964");
   }
+}
+
+function applyPythonResult(res, note) {
+  window.rhythmAudio.playHitSound(res.label, note.type);
+  state.score = res.score;
+  state.combo = res.combo;
+  state.maxCombo = res.maxCombo;
+  state.groove = res.groove;
+  state.counts = res.counts;
+
+  const isPerfect = res.label === "BOP!" || res.label === "RELEASE BOP!";
+  if (isPerfect || res.label === "GOOD") {
+    spawnHitParticles(canvas.width / 2, canvas.height * 0.42, res.color, isPerfect ? 24 : 12);
+    if (note.scene === "seal" && isPerfect) {
+      state.polaroids.unshift({
+        pose:
+          note.type === "hold"
+            ? "🔍 ZOOM SHOT!"
+            : note.type === "offbeat"
+            ? "◇ OFF-BEAT!"
+            : note.type === "heartbeat"
+            ? "💓 7th BEAT!"
+            : "📸 CUTE POSE!",
+        angle: (Math.random() - 0.5) * 0.28,
+        life: 2.5,
+      });
+      if (state.polaroids.length > 3) state.polaroids.pop();
+    } else if (note.scene === "cat") {
+      state.pancakeStack = Math.min(15, state.pancakeStack + (isPerfect && note.type === "hold" ? 2 : 1));
+    }
+  }
+
+  state.judgments.push({
+    text: res.popup,
+    color: res.color,
+    x: canvas.width / 2,
+    y: canvas.height * 0.24,
+    life: 0.72,
+    maxLife: 0.72,
+  });
+
+  updateHud();
 }
 
 function registerJudgment(label, note, color) {

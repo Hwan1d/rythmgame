@@ -83,6 +83,15 @@ body.crt-active::after {
   padding-bottom: 0.9rem;
 }
 
+.marquee-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.45rem;
+}
+
 .pixel-tag {
   display: inline-block;
   background: var(--coral);
@@ -93,7 +102,22 @@ body.crt-active::after {
   padding: 0.22rem 0.7rem;
   border: 2px solid var(--cream);
   box-shadow: 3px 3px 0 #000;
-  margin-bottom: 0.45rem;
+}
+
+.py-badge {
+  display: inline-block;
+  background: #334155;
+  color: #fde047;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.22rem 0.7rem;
+  border: 2px solid var(--cream);
+  box-shadow: 3px 3px 0 #000;
+}
+
+.py-badge.ready {
+  background: #065f46;
+  color: #6ee7b7;
 }
 
 .logo-text {

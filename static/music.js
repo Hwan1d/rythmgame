@@ -275,11 +275,11 @@ class RhythmAudioEngine {
     return this.muted;
   }
 
-  startSong(stageId) {
+  startSong(stageId, customChart = null) {
     this.init();
     this.stopSong();
     this.song = STAGE_SONGS[stageId] || STAGE_SONGS.seal;
-    this.chart = buildStageChart(stageId);
+    this.chart = customChart || buildStageChart(stageId);
     this.playing = true;
     this.startTime = this.ctx.currentTime + 0.15;
     this.nextSubStep = 0;

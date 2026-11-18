@@ -1,41 +1,24 @@
-# BITS & GROOVES — 16-Bit Call & Response Rhythm Arcade
+# BITS & GROOVES — PyScript 16-Bit Rhythm Arcade
 
 - **GitHub 저장소 주소**: https://github.com/Hwan1d/rythmgame
-- **웹 즉시 실행 주소 (GitHub Pages)**: https://hwan1d.github.io/rythmgame/
+- **웹 즉시 실행 주소 (GitHub Pages + PyScript)**: https://hwan1d.github.io/rythmgame/
 
-《Bits & Bops》 및 《리듬 닥터(Rhythm Doctor)》의 감성을 담아 **직접 제작한 16비트 도트 그래픽 애니메이션**과 **오차 0ms 하드웨어 오디오 클럭(`AudioContext.currentTime`) 기반 6채널 칩튠/펑크 신디사이저 음악**으로 구현한 리듬 게임입니다.
+《Bits & Bops》 및 《리듬 닥터(Rhythm Doctor)》의 감성을 담아 **브라우저 내장 Python(PyScript / Pyodide) 엔진(`rhythm_engine.py`)** 과 **6채널 16비트 칩튠 신디사이저(`music.js`)**, **16비트 도트 애니메이션(`game.js`)** 으로 구현한 리듬 게임입니다.
 
-## 주요 특징
-
-### 1. 4개의 개성 넘치는 16비트 비네트 리듬 스테이지
-1. **📸 STAGE 01: SNAP & BOP! (물개 파파라치 · 120 BPM 트로피컬 펑크)**
-   - 바다에서 튀어오른 아기 물개가 카메라 뷰파인더 정중앙에서 포즈를 취하는 순간 셔터(`Space / 좌클릭`)를 눌러 폴라로이드 특종 사진을 찍으세요!
-2. **🔨 STAGE 02: CLOCKWORK BOT (태엽 로봇 공방 · 126 BPM 일렉트로 신스팝)**
-   - 컨베이어 벨트를 따라 이동하는 태엽 로봇이 해머 아래에 도달하는 정박에 볼트를 조여 로봇을 가동시키세요!
-3. **🥞 STAGE 03: RHYTHM DOCTOR DINER (리듬 팬케이크 & 7박 심전도 · 132 BPM 재즈 스윙)**
-   - 셰프 고양이가 높이 토스한 팬케이크를 정박·엇박·7박 심전도 리듬에 맞춰 뒤집어 팬케이크 타워를 쌓으세요!
-4. **🎸 FINAL REMIX: OVERDRIVE BOPS REMIX! (올스타 리믹스 · 138 BPM 하이에너지 칩튠)**
-   - 마디마다 물개·로봇·고양이 스테이지가 실시간으로 전환되는 하이에너지 그랜드 피날레 리믹스!
-
-### 2. 다채로운 리듬 노트 기믹
-- **정박(`SPACE`) & 스타 액센트(`★ X`)**
-- **`◇ 엇박` (Syncopation)**: 8분음표 및 트레시요(3-3-2) 16분음표 엇박 다이아몬드 노트
-- **`꾹! HOLD ━━▶ 떼기!`**: 차징 신스 사운드와 함께 누르고 있다가 끝 지점에서 손을 떼는 롱노트
-- **`💓 7박!` (Rhythm Doctor ECG)**: `1 - 2 - 3 - 4 - 5 - 6 - [7!]` 심전도 파형 모니터와 함께 7번째 박자에 치는 제세동기 노트
+## 최적화된 프로젝트 구조
+```text
+rithm/
+├── index.html            # PyScript 런타임 및 16비트 아케이드 메인 엔트리
+├── rhythm_engine.py      # [Python] 채보 생성, 정박/엇박/홀드/7박 판정 및 랭크 산출 엔진
+├── static/
+│   ├── style.css         # 16비트 픽셀 UI 및 CRT 스캔라인 스타일
+│   ├── music.js          # Web Audio API 0ms 하드웨어 클럭 6채널 칩튠 신디사이저
+│   └── game.js           # 60 FPS 픽셀 비네트 애니메이션 렌더러 & PyScript 연동 브릿지
+└── assets/
+    └── sprites/          # 16비트 도트 캐릭터 스프라이트 (DJ Bopper, 물개, 로봇, 고양이)
+```
 
 ## 조작법
-- **`Space` / `Z` / `마우스 좌클릭`**: 기본 리듬 히트 & 롱노트 홀드 (`BOP!`)
-- **`X` / `→ 방향키` / `마우스 우클릭`**: ★ 스타 액센트 히트 (`SUPER BOP!`)
+- **`Space` / `Z` / `마우스 좌클릭`**: 정박 탭 · `◇ 엇박` · `꾹! HOLD -> 떼기!` · `💓 7박!`
+- **`X` / `→ 방향키` / `마우스 우클릭`**: `★ X` 스타 액센트 노트
 - **`ESC`**: 주크박스 스테이지 선택 화면으로 복귀
-
-## 실행 방법
-
-### 1. 웹 브라우저 즉시 실행 (GitHub Pages)
-- https://hwan1d.github.io/rythmgame/ 접속
-
-### 2. 로컬 Python 서버 실행 (`app.py`)
-```bash
-cd /Users/hwan1d/Desktop/DCO/rithm
-python3 app.py
-```
-실행 시 브라우저에서 **`http://127.0.0.1:8095`** 가 자동으로 열립니다.
